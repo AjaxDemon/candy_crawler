@@ -36,9 +36,10 @@ def create_data_files(project_name):
 
 
 # 创建一个文件
-def write_file(path, data):
+def write_file(path, data=''):
     f = open(path, 'wb')
-    data = data.encode('utf-8')
+    if type(data) is str:
+        data = data.encode('utf-8')
     f.write(data)
     f.close()
 

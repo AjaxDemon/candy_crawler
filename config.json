@@ -1,0 +1,9 @@
+{
+    "resource_dir": "resource",
+    "webdriver_path": "D:\\Documents\\LightingDeng\\__apps__\\chromedriver.exe",
+    "crawl_page_threads": 1,
+    "down_image_threads": 8,
+    "boards": [
+        "http://huaban.com/boards/49815866/"
+    ]
+}

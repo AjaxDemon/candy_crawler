@@ -27,10 +27,10 @@ class CandyCrawler:
             t = threading.Thread(target=self.rootlink_work)
             t.daemon = True
             t.start()
-        # for _ in range(self.crawl_page_threads):
-        #     t = threading.Thread(target=self.sublink_work)
-        #     t.daemon = True
-        #     t.start()
+        for _ in range(self.crawl_page_threads):
+            t = threading.Thread(target=self.sublink_work)
+            t.daemon = True
+            t.start()
 
     def create_down_image_workers(self):
         for _ in range(self.crawl_page_threads):

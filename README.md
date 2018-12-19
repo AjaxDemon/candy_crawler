@@ -6,5 +6,5 @@
 
 参考资料：
 
-* https://selenium-python.readthedocs.io/ selenim官网
+* selenim官网 https://selenium-python.readthedocs.io/ 
 

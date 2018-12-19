@@ -3,9 +3,14 @@
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from lib.Logger import Logger
+from lib.ImageLoader import ImageLoader
+from lib.FileHelper import *
 
 URLS_TO_CRAWL = [
-    'http://huaban.com/boards/24199444/'
+    # 'http://huaban.com/boards/49815866/'
+    'http://huaban.com/boards/30193559/'
+    # 'http://huaban.com/boards/24199444/'
 ]
 
 CHROME_DRIVER_PATH = 'D:\\Documents\\LightingDeng\\__apps__\\chromedriver.exe'
@@ -13,10 +18,14 @@ CHROME_DRIVER_PATH = 'D:\\Documents\\LightingDeng\\__apps__\\chromedriver.exe'
 
 class Crawler:
 
+    project_name = 'HuaBan'
+    resource_path = 'resource'
+    image_dir = ''
     driver = None
 
     def __init__(self):
         self.driver = self.make_chrome_webdriver()
+        self.image_dir = create_image_dir(self.project_name)
 
     def make_chrome_webdriver(self):
         """
@@ -39,16 +48,31 @@ class Crawler:
             urls = []
         for url in urls:
             self.driver.get(url)
-            elements = []
+            suburls = []
             ret = self.driver.execute_script('return document.querySelectorAll(".pin a.layer-view");')
             while len(ret) > 0:
-                elements.extend(ret)
+                for element in ret:
+                    suburls.append(element.get_attribute('href'))
                 el_last_child = self.driver.find_element_by_css_selector('.pin[data-seq]:last-child')
                 query = ('max=%s&limit=20&wfl=1' % str(el_last_child.get_attribute('data-seq')))
                 self.driver.get('%s?%s' % (url, query))
                 ret = self.driver.execute_script('return document.querySelectorAll(".pin a.layer-view");')
-                print('%s?%s' % (url, query))
-                print('Find elements length: %s' % len(ret))
+                Logger.record_log('%s?%s' % (url, query))
+                Logger.write_log_file()
+            Logger.record_log('Find suburls length: %s' % len(suburls))
+
+            imgurls = []
+            for suburl in suburls:
+                self.driver.get(suburl)
+                el_img = self.driver.find_element_by_css_selector('.zoom-layer img')
+                imgurls.append(el_img.get_attribute('src'))
+            Logger.record_log('Find imgurls length: %s' % len(imgurls))
+
+            for imgurl in imgurls:
+                Logger.record_log('Grab: %s' % imgurl)
+                ImageLoader.grab(self.image_dir, imgurl)
+
+            Logger.write_log_file()
 
     @staticmethod
     def run():

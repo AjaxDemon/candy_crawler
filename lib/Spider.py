@@ -37,26 +37,28 @@ class Spider:
             return self.driver
 
     def crawl_rootlink(self, url):
-        sublinks = set()
+        sublinks = list()
+        self.logger.record('Request root page %s' % url)
         self.driver.get(url)
         board_name = self.driver.find_element_by_css_selector('.board-name').text
-        image_dir = create_image_dir('%s/%s' % (self.resource_dir, board_name))
+        image_dir = create_image_dir(self.resource_dir, board_name)
 
         ret = self.driver.execute_script('return document.querySelectorAll(".pin a.layer-view");')
-        while len(ret) > 0:
+        if len(ret) > 0:
             for element in ret:
-                sublinks.add({
+                sublink = element.get_attribute('href')
+                sublinks.append({
                     'image_dir': image_dir,
-                    'sublink': element.get_attribute('href')
+                    'sublink': sublink,
                 })
             el_last_child = self.driver.find_element_by_css_selector('.pin[data-seq]:last-child')
+            url = url.split('?')[0]
             query = ('max=%s&limit=20&wfl=1' % str(el_last_child.get_attribute('data-seq')))
-            self.driver.get('%s?%s' % (url, query))
-            ret = self.driver.execute_script('return document.querySelectorAll(".pin a.layer-view");')
-            self.logger.record('Request root page %s?%s' % (url, query))
-        self.logger.record('Found sub page size: %s' % len(sublinks))
+            next_rootlink = '%s?%s' % (url, query)
+        else:
+            next_rootlink = None
 
-        return sublinks
+        return next_rootlink, sublinks
 
     def crawl_sublink(self, object):
         self.driver.get(object['sublink'])

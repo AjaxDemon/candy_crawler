@@ -40,13 +40,13 @@ class CandyCrawler:
 
     def rootlink_work(self):
         logger = Log()
-        spider = Spider(self.resource_dir, logger=logger)
+        spider = Spider(self.resource_dir, logger=logger, webdriver_path=self.webdriver_path)
         current_thread = threading.current_thread().name
         wait_times = 0
         while True:
             if self.rootlink_queue.empty():
-                logger.write('[%s] No root page to craw, waiting...' % current_thread)
-                time.sleep(1)
+                logger.write('[%s] No root page to crawl, waiting...' % current_thread)
+                time.sleep(2*wait_times)
                 wait_times += 1
                 if wait_times > 10:
                     break
@@ -55,21 +55,28 @@ class CandyCrawler:
                 wait_times = 0
             logger.record('[%s] Thread start: crawl_rootlink' % current_thread)
             url = self.rootlink_queue.get()
-            sublink_set = spider.crawl_rootlink(url)
-            for sublink_object in sublink_set:
-                self.sublink_queue.put(sublink_object)
-            self.rootlink_queue.task_done()
+            try:
+                next_rootlink, sublinks = spider.crawl_rootlink(url)
+                if next_rootlink is not None:
+                    self.rootlink_queue.put(next_rootlink)
+                for sublink_object in sublinks:
+                    self.sublink_queue.put(sublink_object)
+                self.rootlink_queue.task_done()
+            except BaseException as error:
+                logger.write_error_trace('[%s] Caught exception:' % current_thread, error=error)
+                self.rootlink_queue.put(url)
+                self.rootlink_queue.task_done()
             logger.write_to_file()
 
     def sublink_work(self):
         logger = Log()
-        spider = Spider(self.resource_dir, logger=logger)
+        spider = Spider(self.resource_dir, logger=logger, webdriver_path=self.webdriver_path)
         current_thread = threading.current_thread().name
         wait_times = 0
         while True:
             if self.sublink_queue.empty():
-                logger.write('[%s] No sub page to craw, waiting...' % current_thread)
-                time.sleep(1)
+                logger.write('[%s] No sub page to crawl, waiting...' % current_thread)
+                time.sleep(2*wait_times)
                 wait_times += 1
                 if wait_times > 10:
                     break
@@ -78,9 +85,14 @@ class CandyCrawler:
                 wait_times = 0
             logger.record('[%s] Thread start: crawl_sublink' % current_thread)
             sublink_object = self.sublink_queue.get()
-            imagelink_object = spider.crawl_sublink(sublink_object)
-            self.image_queue.put(imagelink_object)
-            self.sublink_queue.task_done()
+            try:
+                imagelink_object = spider.crawl_sublink(sublink_object)
+                self.image_queue.put(imagelink_object)
+                self.sublink_queue.task_done()
+            except BaseException as error:
+                logger.write_error_trace('[%s] Caught exception:' % current_thread, error=error)
+                self.sublink_queue.put(sublink_object)
+                self.sublink_queue.task_done()
             logger.write_to_file()
 
     def down_image_work(self):
@@ -90,8 +102,8 @@ class CandyCrawler:
         wait_times = 0
         while True:
             if self.image_queue.empty():
-                logger.write('[%s] No sub page to craw, waiting...' % current_thread)
-                time.sleep(1)
+                logger.write('[%s] No sub page to crawl, waiting...' % current_thread)
+                time.sleep(2*wait_times)
                 wait_times += 1
                 if wait_times > 10:
                     break
@@ -100,8 +112,13 @@ class CandyCrawler:
                 wait_times = 0
             logger.record('[%s] Thread start: crawl_image' % current_thread)
             image_object = self.image_queue.get()
-            spider.crawl_image(image_object)
-            self.image_queue.task_done()
+            try:
+                spider.crawl_image(image_object)
+                self.image_queue.task_done()
+            except BaseException as error:
+                logger.write_error_trace('[%s] Caught exception:' % current_thread, error=error)
+                self.image_queue.put(image_object)
+                self.image_queue.task_done()
             logger.write_to_file()
 
     def boot(self, links):
@@ -129,5 +146,7 @@ class CandyCrawler:
 
 
 if __name__ == '__main__':
+    start = time.time()
     CandyCrawler.run()
+    print('Execute OK, %is' % (time.time() - start))
 

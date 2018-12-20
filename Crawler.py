@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from lib.Logger import Logger
@@ -8,9 +9,7 @@ from lib.ImageLoader import ImageLoader
 from lib.FileHelper import *
 
 URLS_TO_CRAWL = [
-    'http://huaban.com/boards/49815866/'
-    # 'http://huaban.com/boards/24199444/' # 棋牌
-    # 'http://huaban.com/boards/34666105/' # wlop
+    'http://huaban.com/boards/17890318/',
 ]
 
 CHROME_DRIVER_PATH = 'D:\\Documents\\LightingDeng\\__apps__\\chromedriver.exe'
@@ -83,4 +82,6 @@ class Crawler:
 
 
 if __name__ == '__main__':
+    start = time.time()
     Crawler.run()
+    print('Execute OK, %is' % (time.time() - start))

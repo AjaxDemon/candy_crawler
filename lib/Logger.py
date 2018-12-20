@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import os
+import sys
 import datetime
 
 
@@ -22,6 +23,11 @@ class Log:
             msgstr += str(msg) + ' '
         self.buffer.append(msgstr + '\r\n')
         self.write_to_file()
+
+    def write_error_trace(self, *msgs, error):
+        (_, _, tb) = sys.exc_info()
+        error.with_traceback(tb)
+        self.write(*msgs+(error,))
 
     def write_to_file(self):
         if not os.path.exists('logs'):

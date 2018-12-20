@@ -9,6 +9,7 @@
 * [Python 爬虫杂记 - Chrome Headless](https://www.jianshu.com/p/779b8b23e08f)
 * [selenim官网](https://selenium-python.readthedocs.io/) 
 * [Beautiful Soup文档](https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html)
+* [python队列Queue](https://www.cnblogs.com/itogo/p/5635629.html)
 
 ## 开发思录
 
@@ -44,8 +45,8 @@
 * 第二步：搜索html中的元素`.pin a.layer-view`，采集其中的`href`属性；
 * 第三步：加载下一页时，首先从页面中获取`.pin[data-seq]:last-child`元素，获得其中的`data-seq`属性，然后构造分页请求的url：http://huaban.com/boards/24199444/?jpibwab0&max=1582731010&limit=20&wfl=1 ，其中`max`参数就是`data-seq`的值；
 * 第四步：重复第二步到第三步，直到没有记录返回为止；
-* 第五步：循环采集到的url，请求素材预览的页面，从页面中查询`.zoom-layer img`元素，元素中的`src`属性就是原图的路径，将其采集到新的列表中；
-* 第六步：循环这个列表下载图片；
+* 第五步：循环采集到的url，请求素材预览的页面，从页面中查询`.zoom-layer img`元素，元素中的`src`属性就是原图的路径，将其采集到图片列表中；
+* 第六步：循环这个图片列表下载图片；
 
 ### 源码分析
 

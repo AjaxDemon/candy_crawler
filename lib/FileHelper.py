@@ -11,8 +11,9 @@ def create_project_dir(directory):
 
 
 def create_image_dir(rootdir, subdir='images'):
+    # 替换windows特殊字符
     pattern = re.compile(r'[?*:"<>\\\/|]')
-    subdir = re.sub(pattern, '_', subdir) # 替换windows特殊字符
+    subdir = re.sub(pattern, '_', subdir)
     directory = os.path.join(rootdir, subdir)
     if not os.path.exists(directory):
         print('Creating image directory ' + directory)

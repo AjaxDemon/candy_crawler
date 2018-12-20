@@ -1,5 +1,7 @@
-/env
 /.idea
+/env
 /logs
-/downloads
-/demo
+/resource
+/build
+/dist
+*.spec

@@ -4,12 +4,50 @@
 * 通过Chrome headless模拟真实网页的加载和操作，可以使爬虫程序像真实用户一样浏览页面，从而可以做更多的事情
 * 利用python的并发特性，高效地搜索和下载图片资源
 
+#### 快速使用
+
+1. 安装virtualenv
+
+```shell
+> pip install virtualenv
+```
+
+2. 创建独立的虚拟环境，命名为“env”，并使用该环境
+
+```shell
+> virtualenv env
+> env\Scripts\activate
+```
+
+3. 从requirements.txt文件中安装依赖
+
+```shell
+> pip install -r requirements.txt
+```
+
+4. 执行脚本，Crawler为单进程版本，CandyCrawler为多线程版本
+
+```shell
+> python Crawler.py
+> python CandyCrawler.py
+```
+
+5. 发布成可执行文件（执行命令后，在`dist`目录下能找到生成的二进制文件）
+
+```shell
+> pyinstaller Crawler -F
+> cd dist
+> Crawler.exe
+```
+
+
 参考资料：
 
 * [Python 爬虫杂记 - Chrome Headless](https://www.jianshu.com/p/779b8b23e08f)
 * [selenim官网](https://selenium-python.readthedocs.io/) 
 * [Beautiful Soup文档](https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html)
 * [python队列Queue](https://www.cnblogs.com/itogo/p/5635629.html)
+
 
 ## 开发思录
 
